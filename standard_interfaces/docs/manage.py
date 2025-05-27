@@ -34,7 +34,7 @@ def install_deps():
 def generate_docs():
     """Generate documentation from schemas."""
     run_command(
-        "uv run python scripts/generate_docs.py",
+        "uv run python -m standard_interfaces.docs.generate_docs",
         "Generating documentation from schemas",
     )
 
@@ -89,33 +89,22 @@ def deploy_docs(version=None, alias=None):
 
 
 def clean_docs():
-    """Clean all generated documentation and build artifacts."""
+    """Clean generated documentation."""
     import shutil
 
-    project_root = Path(__file__).parent
-
     paths_to_clean = [
-        project_root / "site",  # MkDocs build output
-        project_root / ".mkdocs_cache",  # MkDocs cache
-        project_root / "docs_src",  # Legacy docs directory
-        project_root / "docs" / "schemas",  # Generated schema docs directory
+        Path("site"),
+        *Path("docs/schemas").glob("*.md"),  # Auto-generated schema docs
     ]
 
-    # Clean specific generated files
-    schema_docs_dir = project_root / "docs" / "schemas"
-    if schema_docs_dir.exists():
-        for md_file in schema_docs_dir.glob("*.md"):
-            if md_file.exists():
-                md_file.unlink()
-                print(f"🗑️  Removed file: {md_file.relative_to(project_root)}")
-
-    # Clean directories
     for path in paths_to_clean:
-        if path.exists() and path.is_dir():
-            shutil.rmtree(path)
-            print(f"🗑️  Removed directory: {path.relative_to(project_root)}")
-
-    print("✅ Documentation cleanup completed")
+        if path.exists():
+            if path.is_dir():
+                shutil.rmtree(path)
+                print(f"🗑️  Removed directory: {path}")
+            else:
+                path.unlink()
+                print(f"🗑️  Removed file: {path}")
 
 
 def main():
@@ -125,15 +114,15 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python docs.py install     # Install dependencies
-  python docs.py generate    # Generate docs from schemas
-  python docs.py serve       # Serve docs locally
-  python docs.py build       # Build static site
-  python docs.py deploy      # Deploy with versioning
-  python docs.py clean       # Clean generated files
+  python -m standard_interfaces.docs.manage install     # Install dependencies
+  python -m standard_interfaces.docs.manage generate    # Generate docs from schemas
+  python -m standard_interfaces.docs.manage serve       # Serve docs locally
+  python -m standard_interfaces.docs.manage build       # Build static site
+  python -m standard_interfaces.docs.manage deploy      # Deploy with versioning
+  python -m standard_interfaces.docs.manage clean       # Clean generated files
   
   # Full workflow
-  python docs.py install generate serve
+  python -m standard_interfaces.docs.manage install generate serve
         """,
     )
 

@@ -17,8 +17,5 @@ site/
 docs/schemas/*.md
 docs/schemas/index.md
 
-# Temporary documentation files
-docs_src/
-
 # MkDocs mike versioning
 versions.json

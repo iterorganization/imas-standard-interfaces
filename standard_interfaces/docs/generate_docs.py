@@ -4,41 +4,9 @@ Generate documentation from JSON schemas.
 """
 
 import json
-import shutil
 import sys
 from pathlib import Path
 from typing import Dict, Any, List
-
-
-def clean_docs_directory(docs_dir: Path) -> None:
-    """Clean the documentation directory of old generated files."""
-    print(f"Cleaning documentation directory: {docs_dir}")
-
-    # Remove entire docs/schemas directory if it exists
-    if docs_dir.exists():
-        shutil.rmtree(docs_dir)
-        print(f"Removed existing directory: {docs_dir}")
-
-    # Create fresh directory
-    docs_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Created clean directory: {docs_dir}")
-
-
-def clean_mkdocs_artifacts(project_root: Path) -> None:
-    """Clean MkDocs build artifacts."""
-    site_dir = project_root / "site"
-    mkdocs_cache = project_root / ".mkdocs_cache"
-
-    for artifact_dir in [site_dir, mkdocs_cache]:
-        if artifact_dir.exists():
-            print(f"Cleaning MkDocs artifact: {artifact_dir}")
-            shutil.rmtree(artifact_dir)
-
-    # Clean any legacy docs_src directory
-    docs_src = project_root / "docs_src"
-    if docs_src.exists():
-        print(f"Removing legacy directory: {docs_src}")
-        shutil.rmtree(docs_src)
 
 
 def generate_property_docs(
@@ -306,22 +274,21 @@ def generate_schema_index(
 
 def main():
     """Main function to generate all documentation."""
-    project_root = Path(__file__).parent.parent
-    schemas_dir = project_root / "standard_interfaces" / "schemas"
+    # Updated path calculation for new location in docs subfolder
+    project_root = Path(__file__).parent.parent.parent
+    schemas_dir = Path(__file__).parent.parent / "schemas"
     docs_dir = project_root / "docs" / "schemas"
-
-    print("Starting documentation generation...")
-    print(f"Project root: {project_root}")
-    print(f"Schemas directory: {schemas_dir}")
-    print(f"Output directory: {docs_dir}")
 
     if not schemas_dir.exists():
         print(f"Error: Schema directory not found: {schemas_dir}")
         sys.exit(1)
 
-    # Clean all documentation artifacts
-    clean_mkdocs_artifacts(project_root)
-    clean_docs_directory(docs_dir)
+    # Clean output directory
+    if docs_dir.exists():
+        import shutil
+
+        shutil.rmtree(docs_dir)
+    docs_dir.mkdir(parents=True, exist_ok=True)
 
     # Find all schema files
     schema_files = list(schemas_dir.rglob("*.schema.json"))
@@ -330,13 +297,10 @@ def main():
         print("No schema files found!")
         return
 
-    print(f"Found {len(schema_files)} schema files")
     schemas_info = []
 
     # Generate documentation for each schema
     for schema_file in schema_files:
-        print(f"Processing: {schema_file.name}")
-
         # Determine category from path
         relative_path = schema_file.relative_to(schemas_dir)
         category = relative_path.parts[0] if len(relative_path.parts) > 1 else "general"
@@ -368,7 +332,6 @@ def main():
             print(f"Error processing schema info for {schema_file}: {e}")
 
     # Generate category pages
-    print("Generating category pages...")
     categories = {}
     for schema in schemas_info:
         category = schema["category"]
@@ -398,15 +361,11 @@ def main():
             print(f"Error generating category page {category_file}: {e}")
 
     # Generate main schema index
-    print("Generating main schema index...")
     generate_schema_index(schemas_info, docs_dir / "index.md")
 
-    print("\n" + "=" * 50)
-    print("Documentation generation complete!")
+    print("\nDocumentation generation complete!")
     print(f"Generated docs for {len(schemas_info)} schemas")
-    print(f"Generated {len(categories)} category pages")
     print(f"Documentation available in: {docs_dir}")
-    print("=" * 50)
 
 
 if __name__ == "__main__":
