@@ -1,17 +1,41 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
 [project]
 name = "standard-interfaces"
-version = "0.1.0"
+dynamic = ["version"]
 description = "NetCDF schemas and examples for tokamak data interfaces"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = ["jsonschema>=4.0.0", "xarray>=2023.1.0"]
 
 [dependency-groups]
-dev = ["ipykernel", "pytest"]
+dev = [
+    "build>=1.2.2.post1",
+    "hatchling>=1.27.0",
+    "hatch-vcs>=0.3.0",
+    "ipykernel",
+    "pytest",
+]
 docs = [
     "mkdocs>=1.5.0",
     "mkdocs-material>=9.4.0",
     "mike>=2.0.0",
     "mkdocs-awesome-pages-plugin>=2.9.0",
     "pymdown-extensions>=10.0.0",
+    "json-schema-for-humans>=0.47.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["standard_interfaces"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"schemas" = "standard_interfaces/schemas"
+"definitions" = "standard_interfaces/definitions"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "standard_interfaces/_version.py"

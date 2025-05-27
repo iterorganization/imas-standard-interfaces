@@ -5,17 +5,15 @@ This module tests the polygon-geometry.schema.json schema against various
 valid and invalid polygon geometry data structures.
 """
 
-import json
 import pytest
-from importlib.resources import files
+from standard_interfaces.schema_access import load_schema
 from jsonschema import validate, ValidationError, Draft7Validator
 
 
 @pytest.fixture
 def polygon_schema():
     """Load the polygon geometry schema."""
-    schema_resource = files("standard_interfaces.schemas.base") / "polygon-geometry.schema.json"
-    return json.loads(schema_resource.read_text())
+    return load_schema("base", "polygon-geometry")
 
 
 @pytest.fixture
