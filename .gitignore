@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Documentation build artifacts
+site/
+.mkdocs_cache/
+
+# Generated documentation files
+docs/schemas/*.md
+docs/schemas/index.md
+
+# Temporary documentation files
+docs_src/
+
+# MkDocs mike versioning
+versions.json

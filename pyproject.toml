@@ -1,0 +1,17 @@
+[project]
+name = "standard-interfaces"
+version = "0.1.0"
+description = "NetCDF schemas and examples for tokamak data interfaces"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["jsonschema>=4.0.0", "xarray>=2023.1.0"]
+
+[dependency-groups]
+dev = ["ipykernel", "pytest"]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mike>=2.0.0",
+    "mkdocs-awesome-pages-plugin>=2.9.0",
+    "pymdown-extensions>=10.0.0",
+]
