@@ -145,7 +145,7 @@ jobs:
         run: |
           python -m pytest tests/ -v      - name: Generate documentation
         run: |
-          uv run python -m standard_interfaces.docs.generate
+          python docs.py generate
           uv run mkdocs build
 ```
 

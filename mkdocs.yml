@@ -52,7 +52,8 @@ markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.betterem:
-      smart_enable: all  - pymdownx.caret
+      smart_enable: all
+  - pymdownx.caret
   - pymdownx.details
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -89,10 +90,18 @@ extra:
 
 nav:
   - Home: index.md
+  - Definitions: cdl_display.md
   - Schemas:
       - Overview: schemas/index.md
-      - Base: schemas/base.md
-      - PF Active: schemas/pf_active.md
-      - TF Active: schemas/tf_active.md
+      - Base:
+          - Overview: schemas/base.md
+          - Polygon Geometry: schemas/polygon-geometry.md
+      - PF Active:
+          - Overview: schemas/pf_active.md
+          - Coil Current: schemas/coil-current.md
+          - Coil Geometry: schemas/coil-geometry.md
+      - TF Active:
+          - Overview: schemas/tf_active.md
+          - Coil Geometry: schemas/coil-geometry.md
   - Examples: examples.md
   - Development: development.md

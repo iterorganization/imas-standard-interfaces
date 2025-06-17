@@ -14,8 +14,14 @@ site/
 .mkdocs_cache/
 
 # Generated documentation files
-docs/schemas/*.md
-docs/schemas/index.md
+docs/schemas/
+docs/static/
+*.html
 
 # MkDocs mike versioning
 versions.json
+
+# Pixi environment files
+.pixi/
+pixi.lock
+docs/schemas/coil-current.html

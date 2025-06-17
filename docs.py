@@ -4,34 +4,63 @@ Documentation management script for Standard Interfaces.
 Provides easy commands for common documentation tasks.
 """
 
-import argparse
+import shutil
 import subprocess
 import sys
-import webbrowser
 from pathlib import Path
 
+import click
 
-def run_command(command, description):
-    """Run a command and handle errors."""
+
+def run_command(command, description, capture_output=True):
+    """
+    Run a command and handle errors.
+
+    Args:
+        command: Shell command to execute
+        description: Description of what the command does
+        capture_output: Whether to capture output (False for long-running processes)
+    """
     print(f"🔄 {description}...")
     try:
-        result = subprocess.run(
-            command, shell=True, check=True, capture_output=True, text=True
-        )
-        print(f"✅ {description} completed")
-        return result
+        if capture_output:
+            result = subprocess.run(
+                command,
+                shell=True,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            if result.stdout:
+                print(result.stdout)
+            return result
+        else:
+            # For long-running processes like servers, don't capture output
+            subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"❌ {description} failed:")
-        print(e.stderr)
+        print(f"❌ Error: {e}")
+        if hasattr(e, "stderr") and e.stderr:
+            print(f"Error output: {e.stderr}")
         sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n🛑 Server stopped by user")
+        sys.exit(0)
 
 
-def install_deps():
+@click.group()
+def cli():
+    """Documentation management for Standard Interfaces."""
+    pass
+
+
+@cli.command()
+def install():
     """Install documentation dependencies."""
     run_command("uv sync --group docs", "Installing documentation dependencies")
 
 
-def generate_docs():
+@cli.command()
+def generate():
     """Generate documentation from schemas."""
     run_command(
         "uv run python scripts/generate_docs.py",
@@ -39,136 +68,91 @@ def generate_docs():
     )
 
 
-def serve_docs(port=8000):
-    """Serve documentation locally."""
-    print(f"🚀 Starting development server on http://localhost:{port}")
-    print("Press Ctrl+C to stop")
-
-    try:
-        # Open browser after a short delay
-        import threading
-        import time
-
-        def open_browser():
-            time.sleep(2)  # Give server time to start
-            webbrowser.open(f"http://localhost:{port}")
-
-        threading.Thread(target=open_browser, daemon=True).start()
-
-        # Start MkDocs server
-        subprocess.run(
-            f"uv run mkdocs serve --dev-addr localhost:{port}", shell=True, check=True
-        )
-
-    except KeyboardInterrupt:
-        print("\n👋 Documentation server stopped")
+@cli.command()
+@click.option("--port", "-p", default=8000, help="Port to serve on")
+@click.option("--host", "-h", default="127.0.0.1", help="Host to bind to")
+def dev_serve(port, host):
+    """Serve documentation in development mode (no versioning)."""
+    cmd = f"uv run mkdocs serve --dev-addr {host}:{port}"
+    print(f"🌐 Server will be available at http://{host}:{port}")
+    print("📝 Press Ctrl+C to stop the server")
+    run_command(
+        cmd, f"Starting development server on {host}:{port}", capture_output=False
+    )
 
 
-def build_docs():
+@cli.command()
+@click.option("--port", "-p", default=8000, help="Port to serve on")
+@click.option("--host", "-h", default="127.0.0.1", help="Host to bind to")
+def serve(port, host):
+    """Serve documentation with versioning (production mode)."""
+    # Check if site directory exists
+    site_dir = Path("site")
+    if not site_dir.exists():
+        print("⚠️  No site directory found. Building initial version...")
+        deploy_initial_version()
+
+    cmd = f"uv run mike serve --dev-addr {host}:{port}"
+    print(f"🌐 Server will be available at http://{host}:{port}")
+    print("📝 Press Ctrl+C to stop the server")
+    run_command(cmd, f"Starting mike server on {host}:{port}", capture_output=False)
+
+
+@cli.command()
+def build():
     """Build static documentation."""
     run_command("uv run mkdocs build", "Building static documentation")
     print("📁 Documentation built in 'site/' directory")
 
 
-def deploy_docs(version=None, alias=None):
+@cli.command()
+@click.option("--version", "-v", help="Version to deploy")
+@click.option("--alias", "-a", help="Alias for the version (e.g., latest)")
+@click.option("--push/--no-push", default=False, help="Push to git remote")
+def deploy(version, alias, push):
     """Deploy documentation with versioning."""
     if not version:
-        version = input("Enter version (e.g., 1.0): ")
+        version = click.prompt("Enter version to deploy", default="dev")
 
     if not alias:
-        alias = input("Enter alias (e.g., latest): ")
+        alias = click.prompt("Enter alias", default="latest")
 
-    cmd = f"uv run mike deploy --push --update-aliases {version} {alias}"
+    push_flag = "--push" if push else ""
+    cmd = f"uv run mike deploy {push_flag} --update-aliases {version} {alias}"
     run_command(cmd, f"Deploying documentation version {version}")
 
     # Set as default if it's 'latest'
     if alias == "latest":
-        run_command(
-            "uv run mike set-default --push latest", "Setting as default version"
-        )
+        set_default_cmd = f"uv run mike set-default {push_flag} {alias}"
+        run_command(set_default_cmd, "Setting as default version")
 
 
-def clean_docs():
-    """Clean all generated documentation and build artifacts."""
-    import shutil
+@cli.command()
+def clean():
+    """Clean generated documentation files."""
+    paths_to_clean = ["site/", "docs/schemas/", "docs/static/"]
 
-    project_root = Path(__file__).parent
-
-    paths_to_clean = [
-        project_root / "site",  # MkDocs build output
-        project_root / ".mkdocs_cache",  # MkDocs cache
-        project_root / "docs_src",  # Legacy docs directory
-        project_root / "docs" / "schemas",  # Generated schema docs directory
-    ]
-
-    # Clean specific generated files
-    schema_docs_dir = project_root / "docs" / "schemas"
-    if schema_docs_dir.exists():
-        for md_file in schema_docs_dir.glob("*.md"):
-            if md_file.exists():
-                md_file.unlink()
-                print(f"🗑️  Removed file: {md_file.relative_to(project_root)}")
-
-    # Clean directories
     for path in paths_to_clean:
-        if path.exists() and path.is_dir():
-            shutil.rmtree(path)
-            print(f"🗑️  Removed directory: {path.relative_to(project_root)}")
+        path_obj = Path(path)
+        if path_obj.exists():
+            if path_obj.is_dir():
+                shutil.rmtree(path_obj)
+                print(f"🗑️  Removed directory: {path}")
+            else:
+                path_obj.unlink()
+                print(f"🗑️  Removed file: {path}")
 
-    print("✅ Documentation cleanup completed")
+    print("✅ Documentation cleanup complete")
 
 
-def main():
-    """Main CLI interface."""
-    parser = argparse.ArgumentParser(
-        description="Documentation management for Standard Interfaces",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python docs.py install     # Install dependencies
-  python docs.py generate    # Generate docs from schemas
-  python docs.py serve       # Serve docs locally
-  python docs.py build       # Build static site
-  python docs.py deploy      # Deploy with versioning
-  python docs.py clean       # Clean generated files
-  
-  # Full workflow
-  python docs.py install generate serve
-        """,
+def deploy_initial_version():
+    """Deploy an initial development version for mike to serve."""
+    print("🚀 Deploying initial development version...")
+    run_command(
+        "uv run mike deploy --update-aliases dev latest", "Creating initial version"
     )
-
-    parser.add_argument(
-        "commands",
-        nargs="+",
-        choices=["install", "generate", "serve", "build", "deploy", "clean"],
-        help="Commands to execute",
-    )
-
-    parser.add_argument(
-        "--port", type=int, default=8000, help="Port for serve command (default: 8000)"
-    )
-
-    parser.add_argument("--version", help="Version for deploy command")
-
-    parser.add_argument("--alias", help="Alias for deploy command")
-
-    args = parser.parse_args()
-
-    # Execute commands in order
-    for command in args.commands:
-        if command == "install":
-            install_deps()
-        elif command == "generate":
-            generate_docs()
-        elif command == "serve":
-            serve_docs(args.port)
-        elif command == "build":
-            build_docs()
-        elif command == "deploy":
-            deploy_docs(args.version, args.alias)
-        elif command == "clean":
-            clean_docs()
+    run_command("uv run mike set-default latest", "Setting latest as default")
 
 
 if __name__ == "__main__":
-    main()
+    cli()

@@ -52,7 +52,7 @@ To contribute to the schemas or documentation:
 
 1. Make changes to schema files in `standard_interfaces/schemas/`
 2. Update documentation in `docs/`
-3. Run the documentation generator: `python -m standard_interfaces.docs.generate`
+3. Run the documentation generator: `python docs.py generate`
 4. Test locally with `mkdocs serve`
 5. Submit a pull request
 

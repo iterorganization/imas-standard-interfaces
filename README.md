@@ -4,6 +4,85 @@ This project provides standardized schemas and interfaces for scientific data fo
 
 ## Installation
 
+### Recommended: Using Pixi
+
+Pixi manages both conda and PyPI dependencies from `pyproject.toml`:
+
+```bash
+# Install pixi (if not already installed)
+curl -fsSL https://pixi.sh/install.sh | bash  # Linux/macOS
+# or: iwr -useb https://pixi.sh/install.ps1 | iex  # Windows PowerShell
+
+# Install all dependencies and activate environment
+pixi install
+pixi shell
+
+# Verify your setup is working
+pixi run verify-setup
+```
+
+### Available Pixi Tasks
+
+```bash
+# Setup and verification
+pixi run verify-setup     # Check that all dependencies are working
+pixi run install-editable # Install package in editable mode
+
+# Development
+pixi run test              # Run tests
+pixi run test-verbose      # Run tests with verbose output
+pixi run lint             # Run linting (configure as needed)
+pixi run format           # Format code (configure as needed)
+
+# Documentation
+pixi run docs-serve       # Serve documentation locally
+pixi run docs-build       # Build documentation
+pixi run docs-deploy      # Deploy documentation with versioning
+
+# Building
+pixi run build            # Build Python package
+pixi run clean            # Clean build artifacts
+
+# Schema processing
+pixi run generate-schemas # Generate JSON schemas from CDL files
+pixi run build-docs       # Generate documentation
+```
+
+### Alternative Installation Methods
+
+### Alternative Installation Methods
+
+#### Using conda (Traditional approach)
+
+This method ensures that `ncgen` (NetCDF utilities) is available for CDL file processing:
+
+```bash
+# Create and activate the conda environment
+conda env create -f environment.yml
+conda activate standard-interfaces
+
+# Install the package in development mode
+pip install -e .
+```
+
+#### Using conda-lock (Generated from pyproject.toml)
+
+Generate conda lock files from pyproject.toml dependencies:
+
+```bash
+# Install conda-lock
+conda install -c conda-forge conda-lock
+
+# Generate lock file from pyproject.toml
+conda-lock --file pyproject.toml --platform win-64
+
+# Create environment from lock file
+conda create --name standard-interfaces --file conda-lock.yml
+conda activate standard-interfaces
+```
+
+#### Using uv (requires separate ncgen installation)
+
 To install the project dependencies:
 
 ```bash
@@ -15,6 +94,12 @@ For development work (includes additional tools like ipykernel for Jupyter noteb
 ```bash
 uv sync --group dev
 ```
+
+**Note**: When using uv, you'll need to install NetCDF utilities separately to get `ncgen`:
+
+- **Windows**: Download from [Unidata NetCDF](https://www.unidata.ucar.edu/downloads/netcdf/)
+- **macOS**: `brew install netcdf`
+- **Linux**: `sudo apt-get install netcdf-bin` (Ubuntu/Debian) or `sudo yum install netcdf` (RHEL/CentOS)
 
 ## Project Structure
 

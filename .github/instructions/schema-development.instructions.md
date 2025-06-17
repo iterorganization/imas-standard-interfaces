@@ -67,8 +67,8 @@ When creating domain-specific schemas, you ONLY add namespace prefixes to confli
 
 ```cdl
 dimensions:
-    outline_node = _ ;
-    element = _ ;
+    outline_node = UNLIMITED ;
+    element = UNLIMITED ;
 
 variables:
     int outline_geometry ;
@@ -80,11 +80,16 @@ variables:
         outline_r:long_name = "Outline major radius coordinate" ;
 ```
 
-**Bad - Missing Prefixes:**
+**Bad - Missing Prefixes and Incorrect Dimensions:**
 
 ```cdl
-int geometry ;              // Should be outline_geometry
-double outline_r(outline_node) ;    // Should be outline_r(outline_node)
+dimensions:
+    outline_node = _ ;          // Should be UNLIMITED
+    element = 10 ;              // Should be UNLIMITED
+
+variables:
+    int geometry ;              // Should be outline_geometry
+    double r(outline_node) ;    // Should be outline_r(outline_node)
 ```
 
 ## Step 3: Write CDL Files
@@ -94,10 +99,59 @@ double outline_r(outline_node) ;    // Should be outline_r(outline_node)
 Include these sections in order:
 
 1. **Global attributes**: title, institution, conventions, source
-2. **Dimensions**: Use `_` for placeholder values in templates
+2. **Dimensions**: Use `UNLIMITED` for all dimensions to ensure ncgen compliance
 3. **Variables**: Include proper NetCDF attributes (units, long_name, etc.)
 4. **Geometry containers**: Follow CF geometry container conventions
 5. **No data section**: Templates define structure, not actual data
+
+### Set Dimensions Appropriately
+
+**Dimension Guidelines**: Choose the appropriate dimension type based on the data characteristics:
+
+#### Use UNLIMITED for Variable-Sized Data
+
+For dimensions that can vary at runtime or between datasets:
+
+```cdl
+dimensions:
+    outline_node = UNLIMITED ;    // Variable number of outline points
+    element = UNLIMITED ;         // Variable number of elements
+    coil = UNLIMITED ;           // Variable number of coils
+    time = UNLIMITED ;           // Time series data
+```
+
+#### Use Integer Dimensions for Fixed, Known Sizes
+
+For dimensions that are fixed and known a priori (geometric constraints, coordinate systems):
+
+```cdl
+dimensions:
+    spatial = 3 ;                // 3D spatial coordinates (x, y, z)
+    vertices_per_triangle = 3 ;  // Triangular elements always have 3 vertices
+    corners_per_quad = 4 ;       // Quadrilateral elements always have 4 corners
+    matrix_size = 2 ;            // 2x2 transformation matrix
+```
+
+**Decision Matrix**:
+
+- **UNLIMITED**: Use when the size varies between datasets or can grow dynamically
+- **Integer**: Use when the size is fixed by physical/mathematical constraints
+
+**Do NOT use these formats:**
+
+```cdl
+// Incorrect - invalid syntax
+dimensions:
+    outline_node = _ ;        // Template placeholder (invalid)
+    element ;                 // No size specified (invalid)
+```
+
+**Why this approach works:**
+
+- Ensures compatibility with ncgen tool
+- Allows appropriate sizing for different data types
+- Prevents schema validation failures
+- Maintains flexibility where needed, efficiency where size is known
 
 ### Use Modern CDL Format
 
@@ -122,7 +176,9 @@ Add these attributes to your variables:
 - `units` for all coordinate and physical variables
 - `long_name` for descriptive names
 - `geometry_type`, `node_coordinates`, `node_count` for geometry containers
-- `_FillValue` for coordinate arrays (use `_` in templates)
+- `_FillValue` for coordinate arrays (optional in templates)
+
+**Important**: When using `_FillValue` in templates, ensure the fill value is compatible with the variable type and does not conflict with expected data ranges.
 
 ## Step 4: Name Your Files
 
@@ -145,9 +201,11 @@ Create separate files in these situations:
 
 Before submitting, verify these requirements:
 
+- **CRITICAL**: Ensure dimensions use appropriate sizing (UNLIMITED for variable data, integer for fixed sizes)
 - Ensure namespace consistency within files
 - Verify geometry container references point to correct variables
 - Check dimension compatibility across variables
+- Test CDL files with ncgen to verify syntax
 - Check CF convention compliance
 
 ## Summary
@@ -156,10 +214,10 @@ To create a new schema:
 
 1. **Choose schema type**: Base (JSON) or Domain (CDL)
 2. **Apply prefixes**: Add domain namespace to all variables
-3. **Write CDL**: Follow template structure with modern format
+3. **Write CDL**: Follow template structure with modern format and appropriate dimensions
 4. **Name file**: Use lowercase with hyphens
 5. **Separate concerns**: Create new files for distinct components
-6. **Check work**: Verify namespace consistency and CF compliance
+6. **Check work**: Verify namespace consistency, appropriate dimensions, and CF compliance
 
 Remember: Base schemas are generic and reusable, domain schemas use scientific conventions with consistent namespacing.
 

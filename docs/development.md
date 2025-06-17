@@ -40,8 +40,8 @@ This guide covers how to contribute to and develop with Standard Interfaces.
 
 1. **Create/modify schemas** in `standard_interfaces/schemas/`
 2. **Run validation tests** with `uv run pytest`
-3. **Generate documentation** with `uv run python -m standard_interfaces.docs.generate`
-4. **Preview documentation** with `uv run mkdocs serve`
+3. **Generate documentation** with `python docs.py generate`
+4. **Preview documentation** with `python docs.py dev-serve`
 
 ### Schema Best Practices
 
@@ -168,16 +168,16 @@ class TestSchemaName:
 
 ```bash
 # Generate schema docs from JSON files
-uv run python -m standard_interfaces.docs.generate
+python docs.py generate
 
 # Serve locally for development
-uv run mkdocs serve
+python docs.py dev-serve
 
 # Build static site
-uv run mkdocs build
+python docs.py build
 
 # Deploy with versioning (requires git repo)
-uv run mike deploy --push --update-aliases 1.0 latest
+python docs.py deploy --version 1.0 --alias latest
 ```
 
 ### Documentation Structure
@@ -284,10 +284,8 @@ jobs:
         uses: astral-sh/setup-uv@v1
 
       - name: Install dependencies
-        run: uv sync --group docs
-
-      - name: Generate and deploy docs        run: |
-          uv run python -m standard_interfaces.docs.generate
+        run: uv sync --group docs      - name: Generate and deploy docs        run: |
+          python docs.py generate
           uv run mike deploy --push --update-aliases main latest
 ```
 
@@ -344,7 +342,7 @@ uv run mypy standard_interfaces/
 
 - Ensure all referenced files exist
 - Check that markdown is properly formatted
-- Verify that `python -m standard_interfaces.docs.generate` runs without errors
+- Verify that `python docs.py generate` runs without errors
 
 #### Import Errors
 

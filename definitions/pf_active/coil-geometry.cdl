@@ -9,24 +9,23 @@ netcdf pf_active_coil_geometry {
 
 dimensions:
     // Coil structure dimensions
-    coil = _ ;                      // Number of PF coils
+    coil = UNLIMITED ;                      // Number of PF coils
     
     // PF outline geometry dimensions  
-    pf_outline_node = _ ;            // Maximum nodes for coil outlines
-    pf_outline_element = _ ;           // Number of outline elements (one per coil)
+    pf_outline_node = UNLIMITED ;            // Nodes for coil outlines
+    pf_outline_element = UNLIMITED ;           // Number of outline elements (one per coil)
     
     // PF element geometry dimensions
-    pf_element_node = _ ;           // Maximum nodes for all coil elements
-    pf_element = _ ;                  // Total number of coil elements (turns)
-    
-    // String length for identifiers
-    string_length = _ ;
+    pf_element_node = UNLIMITED ;           // Nodes for all coil elements
+    pf_element = UNLIMITED ;                  // Total number of coil elements (turns)
 
 variables:
     // Coil identifiers
-    char coil_name(coil, string_length) ;
+    string coil_name(coil) ;
         coil_name:long_name = "coil identifier name" ;
-        coil_name:description = "Human readable coil identifier (e.g., PF1, PF2, etc.)" ;    // PF outline geometry container
+        coil_name:description = "Human readable coil identifier (e.g., PF1, PF2, etc.)" ;
+        
+    // PF outline geometry container
     int pf_outline_geometry ;
         pf_outline_geometry:geometry_type = "polygon" ;
         pf_outline_geometry:node_coordinates = "pf_outline_r pf_outline_z" ;
@@ -39,13 +38,11 @@ variables:
         pf_outline_r:units = "m" ;
         pf_outline_r:long_name = "PF outline major radius coordinate" ;
         pf_outline_r:standard_name = "projection_r_coordinate" ;
-        pf_outline_r:_FillValue = _ ;
 
     double pf_outline_z(pf_outline_node) ;
         pf_outline_z:units = "m" ;
         pf_outline_z:long_name = "PF outline vertical coordinate" ;
         pf_outline_z:standard_name = "projection_z_coordinate" ;
-        pf_outline_z:_FillValue = _ ;
 
     // PF outline topology
     int pf_outline_node_count(pf_outline_element) ;
@@ -55,7 +52,8 @@ variables:
     int pf_outline_coil_index(pf_outline_element) ;
         pf_outline_coil_index:long_name = "coil index for PF outline element" ;
         pf_outline_coil_index:description = "Maps outline elements to parent coil" ;
-        pf_outline_coil_index:valid_range = _, _ ;    // PF element geometry container  
+        
+    // PF element geometry container
     int pf_element_geometry ;
         pf_element_geometry:geometry_type = "polygon" ;
         pf_element_geometry:node_coordinates = "pf_element_r pf_element_z" ;
@@ -68,13 +66,11 @@ variables:
         pf_element_r:units = "m" ;
         pf_element_r:long_name = "PF element major radius coordinate" ;
         pf_element_r:standard_name = "projection_r_coordinate" ;
-        pf_element_r:_FillValue = _ ;
 
     double pf_element_z(pf_element_node) ;
         pf_element_z:units = "m" ;
         pf_element_z:long_name = "PF element vertical coordinate" ;
         pf_element_z:standard_name = "projection_z_coordinate" ;
-        pf_element_z:_FillValue = _ ;
 
     // PF element topology
     int pf_element_node_count(pf_element) ;
@@ -84,18 +80,18 @@ variables:
     int pf_element_coil_index(pf_element) ;
         pf_element_coil_index:long_name = "coil index for PF element" ;
         pf_element_coil_index:description = "Maps elements to parent coil" ;
-        pf_element_coil_index:valid_range = _, _ ;
 
     int pf_element_turn_number(pf_element) ;
         pf_element_turn_number:long_name = "turn number within PF coil" ;
         pf_element_turn_number:description = "Sequential turn number for multi-turn coils" ;
-        pf_element_turn_number:valid_min = _ ;
 
     // Geometric properties
     double coil_area(coil) ;
         coil_area:units = "m^2" ;
         coil_area:long_name = "total coil cross-sectional area" ;
-        coil_area:description = "Sum of all element areas for each coil" ;    double pf_element_area(pf_element) ;
+        coil_area:description = "Sum of all element areas for each coil" ;
+        
+    double pf_element_area(pf_element) ;
         pf_element_area:units = "m^2" ;
         pf_element_area:long_name = "PF element cross-sectional area" ;
         pf_element_area:geometry = "pf_element_geometry" ;
@@ -104,7 +100,9 @@ variables:
     double coil_center_r(coil) ;
         coil_center_r:units = "m" ;
         coil_center_r:long_name = "coil geometric center major radius" ;
-        coil_center_r:description = "Area-weighted center of coil elements" ;    double coil_center_z(coil) ;
+        coil_center_r:description = "Area-weighted center of coil elements" ;
+        
+    double coil_center_z(coil) ;
         coil_center_z:units = "m" ;
         coil_center_z:long_name = "coil geometric center vertical coordinate" ;
         coil_center_z:description = "Area-weighted center of coil elements" ;
