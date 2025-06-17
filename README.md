@@ -59,7 +59,7 @@ This method ensures that `ncgen` (NetCDF utilities) is available for CDL file pr
 ```bash
 # Create and activate the conda environment
 conda env create -f environment.yml
-conda activate standard-interfaces
+conda activate imas-standard-interfaces
 
 # Install the package in development mode
 pip install -e .
@@ -77,8 +77,8 @@ conda install -c conda-forge conda-lock
 conda-lock --file pyproject.toml --platform win-64
 
 # Create environment from lock file
-conda create --name standard-interfaces --file conda-lock.yml
-conda activate standard-interfaces
+conda create --name imas-standard-interfaces --file conda-lock.yml
+conda activate imas-standard-interfaces
 ```
 
 #### Using uv (requires separate ncgen installation)

@@ -12,6 +12,6 @@ except ImportError:
     try:
         from importlib.metadata import version
 
-        __version__ = version("standard-interfaces")
+        __version__ = version("imas-standard-interfaces")
     except Exception:
         __version__ = "unknown"

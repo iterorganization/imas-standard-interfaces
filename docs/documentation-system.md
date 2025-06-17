@@ -1,6 +1,6 @@
 # Documentation Generation System
 
-This document describes the cleaned-up documentation generation system for the standard-interfaces project.
+This document describes the cleaned-up documentation generation system for the imas-standard-interfaces project.
 
 ## Overview
 

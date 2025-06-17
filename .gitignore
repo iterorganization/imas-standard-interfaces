@@ -23,5 +23,4 @@ versions.json
 
 # Pixi environment files
 .pixi/
-pixi.lock
 docs/schemas/coil-current.html

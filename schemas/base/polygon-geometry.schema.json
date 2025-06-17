@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.standard-interfaces.org/base/polygon-geometry.schema.json",
+  "$id": "https://schemas.imas-standard-interfaces.org/base/polygon-geometry.schema.json",
   "title": "2D Polygon Geometry Container",
   "description": "Base schema for validating NetCDF-style geometry containers for 2D polygon cross-section data",
   "type": "object",

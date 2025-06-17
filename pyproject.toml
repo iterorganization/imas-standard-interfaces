@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "standard-interfaces"
+name = "imas-standard-interfaces"
 dynamic = ["version"]
 description = "NetCDF schemas and examples for tokamak data interfaces"
 readme = "README.md"
@@ -61,7 +61,7 @@ platforms = ["win-64", "linux-64", "osx-64"]
 libnetcdf = "*" # Provides ncgen utility for CDL to NetCDF conversion
 
 [tool.pixi.pypi-dependencies]
-standard-interfaces = { path = ".", editable = true }
+imas-standard-interfaces = { path = ".", editable = true }
 imas-standard-names = { path = "../imas-standard-names" }
 
 [tool.uv.sources]

@@ -56,7 +56,7 @@ This guide covers how to contribute to and develop with Standard Interfaces.
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.standard-interfaces.org/category/name.schema.json",
+  "$id": "https://schemas.imas-standard-interfaces.org/category/name.schema.json",
   "title": "Descriptive Title",
   "description": "Clear description of what this schema represents",
   "type": "object",

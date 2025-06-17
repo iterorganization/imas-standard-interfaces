@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.standard-interfaces.org/tf_active/coil-geometry.schema.json",
+  "$id": "https://schemas.imas-standard-interfaces.org/tf_active/coil-geometry.schema.json",
   "title": "TF Active Coil Geometry",
   "description": "Schema for TF Active Coil Geometry - Generated from CDL",
   "type": "object",
