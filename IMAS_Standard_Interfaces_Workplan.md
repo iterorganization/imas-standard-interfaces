@@ -26,7 +26,7 @@ Magnetics equilibrium reconstruction serves as the demonstration domain because 
 
 ### Implementation Approach
 
-The project employs a six-phase chronological approach beginning with foundational geometry container frameworks (Months 1-2), followed by comprehensive validation schema development (Months 3-4), then complete equilibrium interface implementation (Months 5-7), schema generation and validation (Months 8-9), data population and testing (Months 10-11), and final documentation and release preparation (Month 12). This progression ensures that each phase builds upon established foundations while maintaining focus on practical data exchange needs demonstrated through ITER, WEST, and MAST tokamak datasets.
+The project employs a five-phase chronological approach beginning with foundational geometry container frameworks (Months 1-2), followed by complete equilibrium interface implementation (Months 3-5), then schema generation and validation (Months 6-7), data population and testing (Months 8-9), and final documentation and release preparation (Months 10-12). This progression ensures that each phase builds upon established foundations while maintaining focus on practical data exchange needs demonstrated through ITER, WEST, and MAST tokamak datasets.
 
 ### Standard Names Scope
 
@@ -41,40 +41,41 @@ Interface validation occurs through format specification completeness, schema co
 The following diagram illustrates the complete workflow from human-readable interface definitions through automated schema generation to final validation-ready data exchange formats. The process demonstrates how two parallel development streams - CDL interface specifications and foundational schema components - converge to create comprehensive validation capabilities that support interoperable fusion data exchange.
 
 ```
-CDL Interface Definitions          Base Schema Development
-├── pf_active.cdl (Phase 3)       ├── geometry_base.schema.json
-├── pf_passive.cdl (Phase 3)      ├── coordinate_systems.schema.json
-├── tf_active.cdl (Phase 3)       └── standard_names_map.json
-├── wall.cdl (Phase 3)                     │
-├── magnetics.cdl (Phase 3)                │
-└── equilibrium.cdl (Phase 3)              │
-         │                                 │
-         ▼                                 │
-IDS-Specific JSON Schemas                  │
-├── pf_active.schema.json (Phase 4)        │
-├── pf_passive.schema.json (Phase 4)       │
-├── tf_active.schema.json (Phase 4)        │
-├── wall.schema.json (Phase 4)             │
-├── magnetics.schema.json (Phase 4)        │
-└── equilibrium.schema.json (Phase 4)      │
-         │                                 │
-         └─────────────┬───────────────────┘
-                       ▼
-         Composite Data-Tree Schema
-         └── datatree.schema.json (Phase 4)
-                       │
-                       ▼
-              Zenodo Release (DOI)
-              └── datatree.schema.json (Phase 6)
-                       │
-                       ▼
-              Example Validated Datatrees (separate resources)
-              ├── ITER.nc (Phase 5)
-              ├── WEST.nc (Phase 5)
-              └── MAST.nc (Phase 5)
+Base Schema Development (Phase 1)         CDL Interface Definitions (Phase 2)
+├── geometry_base.schema.json             ├── pf_active.cdl
+├── coordinate_systems.schema.json        ├── pf_passive.cdl
+└── standard_names_map.json               ├── tf_active.cdl
+         │                                ├── wall.cdl
+         │                                ├── magnetics.cdl
+         │                                └── equilibrium.cdl
+         │                                         │ │
+         └─────────────┬───────────────────────────┘ │
+                       ▼                             │
+         IDS-Specific JSON Schemas (Phase 3)         │
+         ├── pf_active.schema.json                   │
+         ├── pf_passive.schema.json                  │
+         ├── tf_active.schema.json                   │
+         ├── wall.schema.json                        │
+         ├── magnetics.schema.json                   │
+         └── equilibrium.schema.json                 │
+                       │                             │
+                       ▼                             ▼
+         Composite Data-Tree Schema (Phase 3)      Multi-Machine NetCDF Datasets (Phase 4)
+         └── datatree.schema.json                  ├── ITER.nc
+                       │                           ├── WEST.nc
+                       ▼                           └── MAST.nc
+              Zenodo Release (DOI) (Phase 5)               │
+              └── datatree.schema.json                     │
+                       │                                   │
+                       └─────────────┬─────────────────────┘
+                                     ▼
+                                    Example Validated Datatrees (separate resources)
+                                    ├── ITER.nc
+                                    ├── WEST.nc
+                                    └── MAST.nc
 ```
 
-**Workflow**: Two parallel development streams converge to create comprehensive validation capabilities. In Phase 3, complete CDL interface definitions are developed for all equilibrium-related components, organized by their role as either equilibrium reconstruction inputs (pf_active, pf_passive, tf_active, wall, magnetics) or outputs (equilibrium). Phase 4 automated scripts process these CDL interface definitions to generate all corresponding IDS-specific JSON schemas simultaneously, while developers create base schemas for geometry containers, coordinate systems, and standard names separately to provide foundational validation components. Composite data-tree schemas inherit from both IDS schemas and base schemas to create comprehensive validation systems that validate complete multi-IDS datasets. The project releases the final datatree schema via Zenodo with DOI assignment, enabling researchers to validate their equilibrium datasets against the standard interface specifications. The project provides example datasets as separate netCDF resources.
+**Workflow**: Two parallel development streams converge to create comprehensive validation capabilities. In Phase 2, complete CDL interface definitions are developed for all equilibrium-related components, organized by their role as either equilibrium reconstruction inputs (pf_active, pf_passive, tf_active, wall, magnetics) or outputs (equilibrium). Phase 3 automated scripts process these CDL interface definitions to generate all corresponding IDS-specific JSON schemas simultaneously, while developers create base schemas for geometry containers, coordinate systems, and standard names separately to provide foundational validation components. Composite data-tree schemas inherit from both IDS schemas and base schemas to create comprehensive validation systems that validate complete multi-IDS datasets. The project releases the final datatree schema via Zenodo with DOI assignment, enabling researchers to validate their equilibrium datasets against the standard interface specifications. The project provides example datasets as separate netCDF resources.
 
 ## Phase 1: Foundation and Geometry Standards (Months 1-2)
 
@@ -112,7 +113,7 @@ Interface definition standards establish the framework for using Common Data Lan
 
 ### Documentation Infrastructure and Community Integration
 
-Comprehensive documentation infrastructure supports the geometry specification, container framework, and metadata conventions through automated documentation generation, validation examples, and practical implementation guidance. The documentation system establishes the foundation for community adoption and provides clear pathways for integration with existing analysis frameworks.
+Comprehensive documentation infrastructure supports the geometry specification, container framework, and metadata conventions through automated documentation generation, validation examples, and practical implementation guidance. The documentation system provides clear pathways for integration with existing analysis frameworks.
 
 **Deliverables:**
 
@@ -126,36 +127,9 @@ Comprehensive documentation infrastructure supports the geometry specification, 
 - MkDocs documentation infrastructure with automated GitHub Actions CI
 - Repository integration with automated GitHub Pages deployment and community contribution pathways
 
-## Phase 2: Core Schema Development and Validation (Months 3-4)
+## Phase 2: Complete Equilibrium Interface Development (Months 3-5)
 
-The second phase develops comprehensive schemas for fundamental data representations using the established coordinate systems, geometric components, and interface standards from Phase 1. The project builds a composable system of json-schemas that validates both geometric entities and their associated data variables.
-
-### Validation Schema Architecture and Data Variable Development
-
-The schema validation system identifies IDS groups within data-trees through their `ids_name` metadata attribute rather than relying on group names themselves. This design approach makes the `ids_name` attribute a required metadata field for all IDS groups and enables critical functionality for comparative analysis workflows. By decoupling IDS identification from group naming, the system supports multiple instances of the same IDS type within a single data-tree, allowing researchers to store equilibrium reconstructions from different codes (such as EFIT, HELENA, and CHEASE) side-by-side in the same file for direct comparison whilst using the same json schema for validation. This capability proves essential for validation studies and multi-code benchmarking exercises that form the foundation of reliable fusion analysis workflows.
-
-The composable json-schema system enforces comprehensive validation rules including standard_names for all coordinate variables, geometry containers as metadata-only variables, unit vector normalization, polygon closure requirements, and dimensional consistency checks. Each schema component serves a specific validation role: geometry base schemas validate spatial primitives and coordinate systems, standard names mapping ensures physical quantity identification consistency, and IDS-specific schemas generated from CDL definitions validate data variable specifications and dimensional requirements.
-
-Beyond geometric validation, the schemas encompass comprehensive data variable specifications including here magnetic field measurements, plasma current densities, temperature and density profiles, and equilibrium solver outputs. These schemas enforce consistent variable naming conventions, dimensional requirements, standard name compliance, and geometry metadata links. Standard names form the primary mechanism for ensuring data interoperability by providing unambiguous identification of physical quantities across different facilities and analysis codes.
-
-The modular architecture enables systematic validation of complete multi-IDS datasets while maintaining flexibility for individual component testing and coordinate system consistency enforcement. Composite schema structures enable validation of complete data-trees containing multiple IDSs while maintaining geometry container consistency across different components, supporting both simple measurements and complex derived quantities while ensuring compatibility with the geometry container framework and standard name conventions.
-
-**Note:** See Graphical Abstract for a visual overview of the assembly of a complete validation schema from separate CDL definition files and base schemas.
-
-### Multi-Machine Validation Testing
-
-Initial validation testing shall be conducted using available data from ITER design specifications, WEST experimental datasets, and MAST operational measurements. This testing ensures schema robustness across different tokamak configurations and identifies requirements for machine-specific extensions while maintaining core interface compatibility.
-
-**Deliverables:**
-
-- Composable json-schema validation system architecture and specifications
-- Comprehensive data variable specifications for magnetic field measurements, plasma current densities, temperature and density profiles
-- Multi-machine validation testing framework
-- Initial validation testing results for ITER, WEST, and MAST configurations
-
-## Phase 3: Complete Equilibrium Interface Development (Months 5-7)
-
-Phase three develops comprehensive CDL interface specifications for all equilibrium-related components, organized by their role in equilibrium reconstruction workflows. This phase distinguishes between equilibrium reconstruction input data and equilibrium reconstruction output data that other codes require.
+Phase two develops comprehensive CDL interface specifications for all equilibrium-related components, organized by their role in equilibrium reconstruction workflows. This phase distinguishes between equilibrium reconstruction input data and equilibrium reconstruction output data that other codes require.
 
 ### Equilibrium Reconstruction Input Interfaces
 
@@ -209,15 +183,15 @@ Equilibrium Output Interfaces:
 
 - equilibrium.cdl
 
-Multi-machine validation specifications for ITER, WEST, and MAST configurations
+**Note:** While the CDL file names correspond to Data Dictionary IDS names for organizational clarity, these CDL specifications do not intend to reproduce all functionality within an IDS. These CDL interfaces define concrete interfaces for data interoperability that eliminate ambiguity in data representation - for this reason, we cannot maintain a link between the Data Dictionary IDSs and these structures. The Data Dictionary IDSs may provide inspiration, but maintaining a direct link is neither necessary nor desirable. These CDL interfaces focus specifically on equilibrium reconstruction data exchange requirements rather than comprehensive IDS implementation.
 
-## Phase 4: Schema Generation and Validation (Months 8-9)
+## Phase 3: Schema Generation and Validation (Months 6-7)
 
-Phase four develops automated processing algorithms to convert all CDL interface definitions into corresponding JSON validation schemas and establishes comprehensive validation capabilities for equilibrium data exchange workflows.
+Phase three develops automated processing algorithms to convert all CDL interface definitions into corresponding JSON validation schemas and establishes comprehensive validation capabilities for equilibrium data exchange workflows.
 
 ### CDL-to-JSON Schema Conversion
 
-Automated conversion algorithms parse the complete set of CDL interface definitions developed in Phase 3 and generate corresponding JSON schemas that enforce the specified interface requirements. These algorithms process variable definitions, dimensional constraints, standard name requirements, and geometry metadata specifications to create comprehensive validation schemas for both equilibrium input and output data.
+Automated conversion algorithms parse the complete set of CDL interface definitions developed in Phase 2 and generate corresponding JSON schemas that enforce the specified interface requirements. These algorithms process variable definitions, dimensional constraints, standard name requirements, and geometry metadata specifications to create comprehensive validation schemas for both equilibrium input and output data.
 
 The conversion system handles all CDL variable declarations, attribute specifications, and dimensional requirements while generating appropriate JSON schema validation rules. Standard name mapping integration ensures that placeholder standard names are properly incorporated into the validation system with appropriate references to the standard_names_map.json resource.
 
@@ -225,7 +199,7 @@ The conversion system handles all CDL variable declarations, attribute specifica
 
 The conversion algorithms generate IDS-specific schemas that integrate with the foundational geometry and coordinate system schemas developed in Phase 1. Composite schema generation combines base validation components with IDS-specific requirements to create comprehensive validation systems that support complete equilibrium reconstruction workflows.
 
-Schema composition ensures that geometry container references, coordinate system specifications, and standard name requirements are properly validated across all interface components while maintaining compatibility with the modular validation architecture developed in Phase 2.
+Schema composition ensures that geometry container references, coordinate system specifications, and standard name requirements are properly validated across all interface components while maintaining compatibility with the foundational schemas from Phase 1.
 
 ### Comprehensive Validation Framework
 
@@ -245,9 +219,9 @@ Automated testing systems validate the conversion algorithms and generated schem
   - datatree.schema.json
 - Comprehensive validation testing framework
 
-## Phase 5: Data Population and Validation (Months 10-11)
+## Phase 4: Data Population and Validation (Months 8-9)
 
-Phase five populates the interface specifications with actual geometric and experimental data for ITER, WEST, and MAST tokamaks, creating comprehensive data-trees that demonstrate practical interface implementation and validation.
+Phase four populates the interface specifications with actual geometric and experimental data for ITER, WEST, and MAST tokamaks, creating comprehensive data-trees that demonstrate practical interface implementation and validation.
 
 ### Multi-Machine Data Integration
 
@@ -272,7 +246,7 @@ Performance testing evaluates interface efficiency for different data access pat
 - Performance and scalability assessment reports
 - Refined interface specifications based on validation feedback
 
-## Phase 6: Documentation, Integration, and Release (Month 12)
+## Phase 5: Documentation, Integration, and Release (Months 10-12)
 
 The final phase completes comprehensive documentation, establishes automated publishing workflows, and ensures long-term maintenance capabilities for the standard interfaces.
 
@@ -284,26 +258,35 @@ Usage examples demonstrate complete workflows from data acquisition through anal
 
 ### Automated Publishing and Maintenance
 
-GitHub Actions workflows shall automate documentation building, schema validation, example testing, and release packaging. Automated systems ensure documentation consistency with code development while maintaining up-to-date examples and validation results.
+GitHub Actions workflows shall automate documentation building, schema generation, example testing, and release packaging. Automated systems ensure documentation consistency with code development while maintaining up-to-date examples and validation results.
 
-Release workflows include automated Zenodo publishing with DOI generation for interface specifications and associated schemas. Version control systems ensure backward compatibility while enabling interface evolution based on community feedback and requirements.
-
-### Community Integration and Adoption
-
-Final integration testing ensures compatibility with existing IMAS tools and workflows while identifying pathways for broader community adoption. Integration guidelines help research groups implement standard interfaces within existing analysis frameworks without major workflow disruptions.
+Release workflows include automated Zenodo publishing with versioned DOI assignment for the global datatree.schema.json file. The GitHub CI shall automatically embed DOIs for both the global interface schema and the standard names dictionary within all IDS CDL files to ensure persistent references are maintained throughout the interface specifications.
 
 **Deliverables:**
 
-- Zenodo release with versioned DOI assignment for datatree.schema.json
-- Complete documentation system with automated GitHub CI builds
-- Automated publishing workflows with Zenodo integration
-- Community adoption guidelines and integration pathways
+**Comprehensive Documentation System:**
+
+- Technical specifications documentation for all interface components with automated cross-references
+- Usage guides with tutorial-style learning paths and reference-style technical specifications
+- Implementation examples demonstrating complete workflows from data acquisition through analysis
+- Best practices documentation for interface adoption across different research groups
+- Real dataset examples from ITER, WEST, and MAST demonstrating practical implementation
+- Validation testing documentation serving as both examples and implementation guidance
+
+**Automated Publishing and Maintenance:**
+
+- GitHub Actions workflows for automated documentation building and deployment
+- GitHub Actions workflows for automated schema generation from CDL definitions
+- Release packaging workflows with version control and dependency management
+- Zenodo publishing workflows with versioned DOI assignment for global datatree schema
+- Automated DOI embedding in all IDS CDL files for persistent reference maintenance
+- Continuous integration systems ensuring documentation consistency with code development
 
 ## Key Technical Requirements
 
-The implementation centers on developing comprehensive data exchange interfaces that attach both geometrical and measurement context to data variables through metadata attributes, establishing the foundation for reproducible fusion data analysis. The geometry container concept forms a vital component that needs to be developed within this workplan to enable explicit spatial context specification without coordinate duplication. From this foundation, the project must define standardized coordinate systems supporting cylindrical, Cartesian, and flux coordinates with proper transformation relationships and datum specification that enable complete magnetics equilibrium data exchange.
+The implementation develops comprehensive data exchange interfaces that attach geometric and measurement context to data variables through metadata attributes, establishing the foundation for reproducible fusion data analysis. The geometry container concept enables explicit spatial context specification without coordinate duplication, supporting standardized coordinate systems for cylindrical, Cartesian, and flux coordinates with proper transformation relationships for interoperable magnetics equilibrium data exchange.
 
-Interface specifications must encompass variable names, dimensions, standard names, units, and geometry metadata requirements for all components from magnetic sensors through equilibrium solver outputs. The composable json-schema validation system must enforce geometric consistency, variable naming compliance, dimensional correctness, and cross-IDS compatibility while supporting multi-machine data-trees with different tokamak configurations.
+Interface specifications encompass variable names, dimensions, standard names, units, and geometry metadata requirements from magnetic sensors through equilibrium solver outputs. The composable JSON schema validation system enforces geometric consistency, variable naming compliance, dimensional correctness, and cross-IDS compatibility while supporting multi-machine data-trees with different tokamak configurations.
 
 CDL template implementations must follow established IDS namespacing conventions with geometry container-based prefixes enabling variable organization without excessive nesting structures. The validation infrastructure must support complete magnetics equilibrium data representations from experimental data acquisition through computational analysis results while maintaining geometry container consistency across all components.
 
@@ -311,13 +294,18 @@ Automated schema generation from CDL definitions requires processing scripts tha
 
 ## Deliverables and Timeline
 
-The project deliverables include geometry_base.schema.json and coordinate_systems.schema.json for foundational validation following CF Conventions and ITER Fusion Conventions, standard_names_map.json for placeholder standard name management, complete CDL interface definitions (pf_active.cdl, pf_passive.cdl, tf_active.cdl, wall.cdl, magnetics.cdl, equilibrium.cdl) following established IDS namespacing conventions, corresponding IDS-specific validation schemas (pf_active.schema.json, pf_passive.schema.json, tf_active.schema.json, wall.schema.json, magnetics.schema.json, equilibrium.schema.json), composite datatree.schema.json for complete multi-IDS dataset validation released via Zenodo with DOI assignment, populated example datasets (ITER.nc, WEST.nc, MAST.nc) demonstrating practical implementation, automated processing scripts for CDL-to-schema conversion and continuous integration testing, comprehensive documentation system with extensive usage examples and automated GitHub CI builds, and community adoption guidelines ensuring compatibility with existing IMAS tools and analysis frameworks.
+The project deliverables include geometry_base.schema.json and coordinate_systems.schema.json for foundational validation following CF Conventions and ITER Fusion Conventions, standard_names_map.json for placeholder standard name management, complete CDL interface definitions (pf_active.cdl, pf_passive.cdl, tf_active.cdl, wall.cdl, magnetics.cdl, equilibrium.cdl) following established IDS namespacing conventions, corresponding IDS-specific validation schemas (pf_active.schema.json, pf_passive.schema.json, tf_active.schema.json, wall.schema.json, magnetics.schema.json, equilibrium.schema.json), composite datatree.schema.json for complete multi-IDS dataset validation released via Zenodo with DOI assignment, populated example datasets (ITER.nc, WEST.nc, MAST.nc) demonstrating practical implementation, automated processing scripts for CDL-to-schema conversion and continuous integration testing, and comprehensive documentation system with extensive usage examples and automated GitHub CI builds.
 
-The timeline spans twelve months with Phase 1 establishing geometry container foundations and interface standards, Phase 2 developing comprehensive validation schemas and testing frameworks, Phase 3 implementing complete equilibrium interface definitions organized by workflow role (inputs vs outputs), Phase 4 developing automated CDL-to-JSON schema conversion and generating all validation schemas, Phase 5 populating interfaces with actual data and conducting validation testing, and Phase 6 completing documentation automation and establishing long-term maintenance workflows. Continuous integration testing throughout development maintains consistency with fusion community standards while automated documentation ensures accessibility and adoption across the research community.
+The timeline spans twelve months with Phase 1 establishing geometry container foundations and interface standards, Phase 2 implementing complete equilibrium interface definitions organized by workflow role (inputs vs outputs), Phase 3 developing automated CDL-to-JSON schema conversion and generating all validation schemas, Phase 4 populating interfaces with actual data and conducting validation testing, and Phase 5 completing documentation automation and establishing long-term maintenance workflows. Continuous integration testing throughout development maintains consistency with Fusion Conventions while automated documentation ensures accessibility and adoption across the research community.
 
 ## Success Metrics and Impact
 
-Success metrics include validated interface implementations across three different tokamak configurations, comprehensive documentation with automated builds and extensive usage examples, demonstrated magnetics equilibrium data representations from experimental measurements through computational analysis results, community adoption by multiple research groups with integration into existing analysis frameworks, and established maintenance workflows ensuring long-term interface evolution based on community requirements.
+Success metrics include validated interface implementations across three different tokamak configurations, comprehensive documentation with automated builds and extensive usage examples, demonstrated magnetics equilibrium data representations from experimental measurements through computational analysis results, and established maintenance workflows ensuring long-term interface evolution based on community requirements.
+
+The project impact extends beyond immediate deliverables to establish the foundation for interoperable fusion data exchange that enables reproducible research, cross-facility comparisons, and integrated analysis workflows. By providing concrete interfaces with standardized variable names, dimensions, and geometry metadata, the project addresses the critical barrier preventing meaningful data integration across different fusion research facilities and computational frameworks.
+
+Long-term impact includes enabling automated data analysis pipelines that span multiple facilities, supporting advanced machine learning applications through consistent data representations, facilitating collaborative research through standardized data exchange protocols, and establishing the foundation for comprehensive fusion data repositories that serve the broader research community. These outcomes advance fusion science by removing data interoperability barriers and enabling the collaborative analysis approaches essential for achieving fusion energy goals.
+Success metrics include validated interface implementations across three different tokamak configurations, comprehensive documentation with automated builds and extensive usage examples, demonstrated magnetics equilibrium data representations from experimental measurements through computational analysis results, and established maintenance workflows ensuring long-term interface evolution based on community requirements.
 
 The project impact extends beyond immediate deliverables to establish the foundation for interoperable fusion data exchange that enables reproducible research, cross-facility comparisons, and integrated analysis workflows. By providing concrete interfaces with standardized variable names, dimensions, and geometry metadata, the project addresses the critical barrier preventing meaningful data integration across different fusion research facilities and computational frameworks.
 
